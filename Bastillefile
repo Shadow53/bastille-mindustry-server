@@ -1,0 +1,17 @@
+PKG openjdk15
+
+#FSTAB fdesc	/dev/fd		fdescfs		rw	0	0
+#FSTAB proc	/proc		procfs		rw	0	0
+
+CMD mkdir -p /usr/local/mindustry
+CMD fetch https://github.com/Anuken/Mindustry/releases/download/v124.1/server-release.jar -o /usr/local/mindustry/server.jar
+
+OVERLAY usr
+CMD chmod +x /usr/local/etc/rc.d/mindustry
+
+CMD pw group add mindustry
+CMD pw user  add mindustry -d /usr/local/mindustry -g mindustry
+CMD chown -R mindustry:mindustry /usr/local/mindustry
+
+SYSRC mindustry_enable=YES
+SERVICE mindustry start

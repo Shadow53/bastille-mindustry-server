@@ -1,0 +1,74 @@
+#!/bin/sh
+#
+# $FreeBSD$
+# PROVIDE: mindustry
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+#
+# rc.conf variables:
+# mindustry_enable (Default: NO)
+# mindustry_mems (Default: 1024M)
+# mindustry_memx (Default: 1024M)
+# mindustry_jar_file (Default: /usr/local/mindustry/serveer.jar)
+# mindustry_java_flags (Default: "-Xmx${mindustry_memx} -Xms${mindustry_mems}")
+
+# mindustry_default_map (Default: "")
+# mindustry_default_mode (Default: "")
+#                        (server defaults to survival if not specified)
+# mindustry_server_name (Default: "Mindustry")
+# mindustry_server_desc (Default: "Proudly hosted on FreeBSD")
+# mindustry_server_port (Default: 6567)
+# mindustry_server_logging (Default: "true")
+# mindustry_server_autoupdate (Default: "true")
+# mindustry_server_antispam (Default: "true")
+# mindustry_server_strict (Default: "true")
+# mindustry_server_autosave (Default: "true")
+# mindustry_server_autosave_amount (Default: 10)
+# mindustry_server_autosave_spacing (Default: 60)
+# mindustry_server_args (Overrides all mindustry_server_* options, Default: "")
+
+. /etc/rc.subr
+
+name=mindustry
+rcvar=mindustry_enable
+desc="Dedicated server for the game Mindustry"
+
+load_rc_config $name
+
+: ${mindustry_mems:="1024M"}
+: ${mindustry_memx:="1024M"}
+: ${mindustry_jar_file:="/usr/local/mindustry/server.jar"}
+: ${mindustry_java_flags:="-Xmx${mindustry_memx} -Xms${mindustry_mems}"}
+: ${mindustry_default_map:=""}
+: ${mindustry_default_mode:=""}
+: ${mindustry_server_name:="Mindustry"}
+: ${mindustry_server_desc:="Proudly hosted on FreeBSD"}
+: ${mindustry_server_port:=6567}
+: ${mindustry_server_logging:="true"}
+: ${mindustry_server_autoupdate:="true"}
+: ${mindustry_server_antispam:="true"}
+: ${mindustry_server_strict:="true"}
+: ${mindustry_server_autosave:="true"}
+: ${mindustry_server_autosave_amount:=10}
+: ${mindustry_server_autosave_spacing:=60}
+: ${mindustry_server_args:="config name ${mindustry_server_name},config desc ${mindustry_server_desc},config port ${mindustry_server_port},config logging ${mindustry_server_logging},config strict $mindustry_server_strict,config antiSpam ${mindustry_server_antispam},config autoUpdate ${mindustry_server_autoupdate},config autosave ${mindustry_server_autosave},config autosaveAmount ${mindustry_server_autosave_amount},config autosaveSpacing ${mindustry_server_autosave_spacing},host ${mindustry_default_map} ${mindustry_default_mode}"}
+
+: ${mindustry_user:="mindustry"}
+: ${mindustry_group:="mindustry"}
+
+start_precmd="${name}_precmd"
+
+mindustry_chdir="/usr/local/mindustry"
+
+pidfile="/var/run/${name}/${name}.pid"
+procname="/usr/local/openjdk15/bin/java"
+command="/usr/sbin/daemon"
+command_args="-f -p ${pidfile} ${procname} ${mindustry_java_flags} -jar ${mindustry_jar_file} ${mindustry_server_args}"
+
+mindustry_precmd() {
+	if [ ! -e /var/run/mindustry ]; then
+		install -d -o mindustry -g mindustry /var/run/mindustry
+	fi
+}
+
+run_rc_command "$1"
