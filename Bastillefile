@@ -3,8 +3,10 @@ PKG openjdk15
 #FSTAB fdesc	/dev/fd		fdescfs		rw	0	0
 #FSTAB proc	/proc		procfs		rw	0	0
 
-CMD mkdir -p /usr/local/mindustry
+CMD mkdir -p /usr/local/mindustry/config/mods
 CMD fetch https://github.com/Anuken/Mindustry/releases/download/v124.1/server-release.jar -o /usr/local/mindustry/server.jar
+CMD fetch https://git.shadow53.com/attachments/fd2ee056-7017-4bbd-844c-eb40656b6fb7 -o /usr/local/mindustry/config/mods/AdminPlugin.jar
+CMD fetch https://git.shadow53.com/attachments/abdd6006-5750-4794-b66f-9148e95c0a74 -o /usr/local/mindustry/config/mods/AutoPausePlugin.jar
 
 OVERLAY usr
 CMD chmod +x /usr/local/etc/rc.d/mindustry
